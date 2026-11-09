@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>KYEB Admin</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="dashboard">
+<h1>KYEB Admin Panel</h1>
+<p id="userInfo" style="color:#0d5ba6;font-weight:bold;"></p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:15px;margin-top:20px;">
+<div style="background:#0d2a54;color:white;padding:20px;border-radius:10px;text-align:center;"><h1>8</h1><p>Departments</p></div>
+<div style="background:#0d2a54;color:white;padding:20px;border-radius:10px;text-align:center;"><h1 id="docCount">0</h1><p>Total Docs</p></div>
+<div style="background:#0d2a54;color:white;padding:20px;border-radius:10px;text-align:center;"><h1>12</h1><p>Staff Users</p></div>
+<div style="background:#0d2a54;color:white;padding:20px;border-radius:10px;text-align:center;"><h1>Active</h1><p>System Status</p></div>
+</div>
+
+<h2 style="margin-top:30px;">Department Overview</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:15px;margin-top:15px;">
+
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>📄 HR</h3><p id="c-hr">0 docs</p></div>
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>💰 Finance</h3><p id="c-finance">0 docs</p></div>
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>📢 Comms</h3><p id="c-comms">0 docs</p></div>
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>💻 IT</h3><p id="c-it">0 docs</p></div>
+
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>📈 Marketing</h3><p id="c-marketing">0 docs</p></div>
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>🛒 Procurement</h3><p id="c-procurement">0 docs</p></div>
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>✍️ Editorial</h3><p id="c-editorial">0 docs</p></div>
+<div style="background:white;padding:15px;border-radius:10px;border-left:4px solid #0d5ba6;"><h3>🏢 Corporate</h3><p id="c-corporate">0 docs</p></div>
+
+</div>
+
+<h2 style="margin-top:30px;">Recent Uploads (All Departments)</h2>
+<div style="background:white;padding:15px;border-radius:10px;margin-top:10px;">
+<table style="width:100%;border-collapse:collapse;">
+<tr style="background:#0d5ba6;color:white;"><th style="padding:10px;text-align:left;">File</th><th>Department</th><th>Uploaded By</th><th>Action</th></tr>
+<tr><td style="padding:8px;">Brand Strategy 2024.pdf</td><td>Marketing</td><td>immaculate@kenyayearbook.go.ke</td><td><button style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">Delete</button></td></tr>
+<tr><td style="padding:8px;">Budget Q4.xlsx</td><td>Finance</td><td>finance@kenyayearbook.go.ke</td><td><button style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">Delete</button></td></tr>
+<tr><td style="padding:8px;">HR Policy.pdf</td><td>HR</td><td>admin@kenyayearbook.go.ke</td><td><button style="background:red;color:white;border:none;padding:5px 10px;border-radius:5px;">Delete</button></td></tr>
+</table>
+</div>
+
+<br><a href="#" onclick="doLogout()">Logout</a>
+</div>
+
+<script>
+const user = localStorage.getItem('kyeb_user');
+const role = localStorage.getItem('kyeb_role');
+if(!user || role!== 'admin'){
+  alert('Admin access only!');
+  window.location.href = 'index.html';
+}
+document.getElementById('userInfo').textContent = 'Logged in as ADMIN: ' + user;
+
+// LIVE COUNTS - THIS IS THE FIX
+const docs = JSON.parse(localStorage.getItem('kyeb_docs') || '{}');
+let total = 0;
+for(let d in docs){ total += docs[d]; }
+document.getElementById('docCount').textContent = total;
+
+const depts = ['hr','finance','comms','it','marketing','procurement','editorial','corporate'];
+depts.forEach(dept => {
+  const el = document.getElementById('c-'+dept);
+  if(el){
+    el.textContent = (docs[dept] || 0) + ' docs';
+  }
+});
+
+function doLogout(){
+  localStorage.removeItem('kyeb_user');
+  localStorage.removeItem('kyeb_role');
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

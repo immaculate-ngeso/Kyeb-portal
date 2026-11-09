@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leave - KYEB</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .leave-wrapper{max-width:700px;margin:0 auto;padding:20px}
+  .back-link{color:#6b1a2e;text-decoration:none;font-weight:600;font-size:14px}
+  .top-stripe{height:4px;background:#6b1a2e;border-radius:2px;margin:12px 0 20px}
+  .leave-card{background:#fff;border-radius:12px;padding:25px;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
+  .leave-card h1{text-align:center;margin:0 0 5px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px}
+  .form-group{display:flex;flex-direction:column;margin-bottom:15px}
+  .form-group.full{grid-column:1 / -1}
+  label{font-size:12px;font-weight:700;color:#555;margin-bottom:6px;text-transform:uppercase}
+  .leave-card input, .leave-card select, .leave-card textarea{
+    padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;width:100%;box-sizing:border-box
+  }
+  .leave-card input:focus, .leave-card select:focus, .leave-card textarea:focus{border-color:#6b1a2e}
+  #staffName{background:#f4f4f5;font-weight:600}
+  .btn-submit{width:100%;background:#b91c1c;color:#fff;border:none;padding:14px;border-radius:8px;font-weight:800;cursor:pointer;margin-top:10px;font-size:15px}
+  .btn-submit:hover{background:#991b1b}
+  #daysInfo{font-size:13px;color:#6b1a2e;font-weight:600;margin-top:5px}
+  .history-title{margin-top:30px;font-size:18px}
+  #myLeaves{background:#fff;border-radius:12px;padding:15px;min-height:60px;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-top:10px;color:#888;text-align:center}
+  @media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="leave-wrapper">
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    <div class="top-stripe"></div>
+    
+    <div class="leave-card">
+      <h1>Apply for Leave</h1>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Staff Name</label>
+          <input type="text" id="staffName" readonly>
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <select id="dept">
+            <option>HR</option>
+            <option>Finance</option>
+            <option>ICT</option>
+            <option>Operations</option>
+            <option>Comms</option>
+            <option>Procurement</option>
+            <option>Marketing</option>
+            <option>Corporate</option>
+            <option>Editorial</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Leave Type</label>
+          <select id="leaveType">
+            <option>Annual Leave</option>
+            <option>Sick Leave</option>
+            <option>Maternity Leave</option>
+            <option>Compassionate Leave</option>
+            <option>Paternity Leave</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Number of Days</label>
+          <input type="text" id="daysCount" readonly placeholder="Auto">
+        </div>
+
+        <div class="form-group">
+          <label>From Date</label>
+          <input type="date" id="fromDate">
+        </div>
+        <div class="form-group">
+          <label>To Date</label>
+          <input type="date" id="toDate">
+        </div>
+
+        <div class="form-group full">
+          <label>Reason</label>
+          <textarea id="reason" rows="3" placeholder="Brief reason for leave..."></textarea>
+          <span id="daysInfo"></span>
+        </div>
+      </div>
+
+      <button onclick="applyLeave()" class="btn-submit">Submit Application</button>
+    </div>
+
+    <h2 class="history-title">My Leave History (Staff View)</h2>
+    <div id="myLeaves">No leave applications yet.</div>
+  </div>
+</div>
+
+<script>
+// AUTO-FILL from login - keep your logic
+document.getElementById('staffName').value = localStorage.getItem('kyeb_name') || 'IMMACULATE NGESO';
+document.getElementById('dept').value = localStorage.getItem('kyeb_dept') || 'HR';
+
+// AUTO CALC DAYS
+const fromDate = document.getElementById('fromDate');
+const toDate = document.getElementById('toDate');
+const daysCount = document.getElementById('daysCount');
+const daysInfo = document.getElementById('daysInfo');
+
+function calc(){
+ if(fromDate.value && toDate.value){
+  let d1=new Date(fromDate.value), d2=new Date(toDate.value);
+  let diff=Math.ceil((d2-d1)/(1000*60*60*24))+1;
+  if(diff>0){
+    daysCount.value = diff + ' Days';
+    daysInfo.textContent = 'Duration: ' + diff + ' day(s)';
+  } else {
+    daysCount.value = 'Invalid';
+    daysInfo.textContent = 'End date must be after start date';
+  }
+ }
+}
+fromDate.addEventListener('change', calc);
+toDate.addEventListener('change', calc);
+
+function applyLeave(){
+  // Your existing submit logic here - now with days
+  let data = {
+    name: staffName.value,
+    dept: dept.value,
+    type: leaveType.value,
+    from: fromDate.value,
+    to: toDate.value,
+    reason: reason.value,
+    days: daysCount.value
+  };
+  console.log(data);
+  alert('Leave application submitted!');
+  // Add to history...
+}
+
+function loadLeaves(){
+  // Your existing load history logic
+}
+loadLeaves();
+</script>
+</body>
+</html>

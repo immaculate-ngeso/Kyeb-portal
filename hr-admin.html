@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Admin Panel - KYEB</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{background:#f4f6f9;}
+.hr-container{max-width:900px;margin:20px auto;background:white;padding:25px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.1);}
+h1{color:#003366;}
+.welcome{color:#555;margin-bottom:10px;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+th{background:#003366;color:white;padding:10px;text-align:left;}
+td{padding:8px;border-bottom:1px solid #ddd;}
+.status-pending{color:orange;font-weight:bold;}
+.status-approved{color:green;font-weight:bold;}
+.status-rejected{color:red;font-weight:bold;}
+.btn-approve{background:#28a745;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;margin-right:5px;}
+.btn-reject{background:#dc3545;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;}
+.btn-done{color:gray;}
+.top-stripe{height:5px;background:#cc0000;border-radius:5px;}
+</style>
+</head>
+<body>
+<div class="hr-container">
+<div class="top-stripe"></div>
+<h1>HR Admin Panel - KYEB</h1>
+<div class="welcome">Welcome, <span id="welcomeName"></span> | Department: <span id="welcomeDept"></span></div>
+<a href="dashboard.html" style="color:#cc0000;text-decoration:none;">← Back to Dashboard</a>
+<hr>
+
+<h2>📋 Pending Leave Requests</h2>
+<table id="leaveTable">
+<thead>
+<tr>
+<th>Staff Name</th><th>Department</th><th>Leave Type</th><th>Days</th><th>Reason</th><th>Status</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="leaveBody"></tbody>
+</table>
+
+<h2 style="margin-top:40px;">👥 All Staff</h2>
+<table id="staffTable">
+<thead>
+<tr><th>Name</th><th>Department</th></tr>
+</thead>
+<tbody id="staffBody"></tbody>
+</table>
+
+</div>
+
+<script>
+// Security check
+let myName = localStorage.getItem('kyeb_name');
+let myDept = localStorage.getItem('kyeb_dept');
+if(myDept!== 'HR'){
+  alert('Access denied! Only HR can access this page.');
+  window.location.href = 'dashboard.html';
+}
+document.getElementById('welcomeName').innerText = myName;
+document.getElementById('welcomeDept').innerText = myDept;
+
+function calcDays(from, to){
+ if(!from ||!to) return 1;
+ let s = new Date(from);
+ let e = new Date(to);
+ let diff = Math.ceil((e - s)/(1000*60*60*24))+1;
+ return diff > 0? diff : 1;
+}
+
+function loadLeaves(){
+ let L = JSON.parse(localStorage.getItem('kyeb_leaves') || '[]');
+ let tbody = document.getElementById('leaveBody');
+ tbody.innerHTML = '';
+
+ if(L.length === 0){
+   tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:gray;">No leave requests yet.</td></tr>';
+   return;
+ }
+
+ L.forEach((o, index) => {
+   let daysShow = o.days || o.numDays || calcDays(o.from || o.startDate, o.to || o.endDate);
+   let statusClass = o.status==='Pending'? 'status-pending' : o.status==='Approved'? 'status-approved' : 'status-rejected';
+
+   let actionBtns = '';
+   if(o.status === 'Pending'){
+     actionBtns = `<button class="btn-approve" onclick="updateStatus(${o.id}, 'Approved')">Approve</button><button class="btn-reject" onclick="updateStatus(${o.id}, 'Rejected')">Reject</button>`;
+   } else {
+     actionBtns = '<span class="btn-done">Done</span>';
+   }
+
+   tbody.innerHTML += `<tr>
+     <td>${o.name}</td>
+     <td>${o.dept || o.department}</td>
+     <td>${o.type || o.leaveType}</td>
+     <td>${daysShow}</td>
+     <td>${o.reason}</td>
+     <td class="${statusClass}">${o.status}</td>
+     <td>${actionBtns}</td>
+   </tr>`;
+ });
+
+ loadAllStaff(L);
+}
+
+function loadAllStaff(leaves){
+ let staffMap = {};
+ leaves.forEach(l => {
+   if(l.name){
+     let key = l.name.toLowerCase().trim();
+     staffMap[key] = {name: l.name, dept: l.dept || l.department};
+   }
+ });
+ let tbody = document.getElementById('staffBody');
+ tbody.innerHTML = '';
+ let staffArray = Object.values(staffMap);
+ if(staffArray.length === 0){
+   tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;color:gray;">No staff yet</td></tr>';
+ } else {
+   staffArray.forEach(s => {
+     tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.dept}</td></tr>`;
+   });
+ }
+}
+
+function updateStatus(id, newStatus){
+ let L = JSON.parse(localStorage.getItem('kyeb_leaves') || '[]');
+ let idx = L.findIndex(o => o.id === id);
+ if(idx ===

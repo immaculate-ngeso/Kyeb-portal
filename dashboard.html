@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KYEB Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Welcome to KYEB Portal</h1>
+        <p id="userInfo" style="color:#0d5ba6; font-weight:bold;"></p>
+        <p>Select your department</p>
+        <div class="cards">
+            <a href="hr.html" style="text-decoration:none; color:black;"><div class="card">📄 HR Documents</div></a>
+            <a href="finance.html" style="text-decoration:none; color:black;"><div class="card">💰 Finance</div></a>
+            <a href="comms.html" style="text-decoration:none; color:black;"><div class="card">📢 Communications</div></a>
+            <a href="it.html" style="text-decoration:none; color:black;"><div class="card">💻 IT Support</div></a>
+            <a href="marketing.html" style="text-decoration:none; color:black;"><div class="card">📈 Marketing</div></a>
+            <a href="procurement.html" style="text-decoration:none; color:black;"><div class="card">🛒 Procurement</div></a>
+            <a href="editorial.html" style="text-decoration:none; color:black;"><div class="card">✍️ Editorial</div></a>
+            <a href="corporate.html" style="text-decoration:none; color:black;"><div class="card">🏢 Corporate Affairs</div></a>
+        </div>
+        <br><br>
+        <a href="#" onclick="doLogout()">Logout</a>
+    </div>
+
+<script>
+const user = localStorage.getItem('kyeb_user');
+if(user){
+    document.getElementById('userInfo').textContent = 'Logged in as: ' + user;
+} else {
+    window.location.href = 'index.html';
+}
+function doLogout(){
+    localStorage.removeItem('kyeb_user');
+    window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

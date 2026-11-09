@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Admin - KYEB</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{background:#f4f6f9;}
+.hr-container{max-width:950px;margin:20px auto;background:white;padding:25px;border-radius:12px;box-shadow:0 0 15px rgba(0,0,0,0.1);}
+h1{color:#003366;}.top-stripe{height:5px;background:#28a745;border-radius:5px;}
+table{width:100%;border-collapse:collapse;margin-top:15px;}
+th{background:#003366;color:white;padding:10px;text-align:left;}
+td{padding:8px;border-bottom:1px solid #ddd;}
+.btn-approve{background:#28a745;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;}
+.btn-reject{background:#dc3545;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="hr-container">
+<div class="top-stripe"></div>
+<h1>Finance Admin Panel - KYEB</h1>
+<p>Welcome, <span id="welcomeName"></span> | Department: <span id="welcomeDept"></span></p>
+<a href="dashboard.html" style="color:#cc0000;">← Back to Dashboard</a>
+<hr>
+<h2>💰 Pending Finance Requests</h2>
+<table>
+<thead><tr><th>Staff</th><th>Dept</th><th>Type</th><th>Amount</th><th>Reason</th><th>Date Needed</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="financeBody"></tbody>
+</table>
+</div>
+
+<script>
+let myName=localStorage.getItem('kyeb_name');
+let myDept=localStorage.getItem('kyeb_dept');
+if(myDept!=='Finance'){alert('Access denied! Only Finance.'); window.location.href='dashboard.html';}
+document.getElementById('welcomeName').innerText=myName;
+document.getElementById('welcomeDept').innerText=myDept;
+
+function loadFinance(){
+ let L=JSON.parse(localStorage.getItem('kyeb_expenses')||'[]');
+ let tbody=document.getElementById('financeBody');
+ tbody.innerHTML='';
+ if(L.length===0){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:gray;">No finance requests</td></tr>';return;}
+ L.forEach(o=>{
+   let action=o.status==='Pending'? `<button class="btn-approve" onclick="updateStatus(${o.id},'Approved')">Approve</button><button class="btn-reject" onclick="updateStatus(${o.id},'Rejected')">Reject</button>` : 'Done';
+   let col=o.status==='Pending'?'orange':o.status==='Approved'?'green':'red';
+   tbody.innerHTML+=`<tr>
+   <td>${o.name}</td><td>${o.dept}</td><td>${o.type}</td><td>KES ${o.amount}</td><td>${o.reason}</td><td>${o.dateNeeded}</td>
+   <td style="color:${col};font-weight:bold;">${o.status}</td><td>${action}</td></tr>`;
+ });
+}
+
+function updateStatus(id, status){
+ let L=JSON.parse(localStorage.getItem('kyeb_expenses')||'[]');
+ let idx=L.findIndex(o=>o.id===id);
+ if(idx!==-1){L[idx].status=status; localStorage.setItem('kyeb_expenses', JSON.stringify(L)); loadFinance();}
+}
+loadFinance();
+</script>
+</body>
+</html>

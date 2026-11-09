@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head><title>Corporate - KYEB</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="dashboard">
+<h1>🏢 Corporate Department</h1>
+<p id="userInfo" style="color:#0d5ba6;font-weight:bold;"></p>
+<div style="background:white;padding:20px;border-radius:10px;margin-top:20px;">
+<h3>Upload Document</h3>
+<input type="file" id="fileInput">
+<button onclick="uploadDoc()">Upload to Corporate</button>
+<h3 style="margin-top:20px;">Documents</h3><ul id="docList"></ul>
+</div>
+<br><a href="dashboard.html">← Back</a> | <a href="#" onclick="doLogout()">Logout</a>
+</div>
+<script>
+const user=localStorage.getItem('kyeb_user'); if(!user) window.location.href='index.html';
+document.getElementById('userInfo').textContent='Logged in as: '+user;
+function uploadDoc(){
+  const input=document.getElementById('fileInput');
+  if(input.files.length===0){alert('Select file');return;}
+  const fileName=input.files[0].name;
+  const li=document.createElement('li'); li.textContent=fileName+' - Uploaded';
+  document.getElementById('docList').appendChild(li);
+  let docs=JSON.parse(localStorage.getItem('kyeb_docs')||'{}');
+  docs['corporate']=(docs['corporate']||0)+1; localStorage.setItem('kyeb_docs',JSON.stringify(docs));
+  alert(fileName+' uploaded to Corporate!'); input.value='';
+}
+function doLogout(){localStorage.removeItem('kyeb_user');localStorage.removeItem('kyeb_role');window.location.href='index.html';}
+</script></body></html>
